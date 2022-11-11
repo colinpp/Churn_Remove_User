@@ -1,4 +1,4 @@
-# nest-lambda-docker-container-surpport
+# nest-lambda-docker-container-surpport-churn
 
 This project is aws service to delete churned numbers.
 

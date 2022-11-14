@@ -1,0 +1,266 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ServerlessDeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "MainLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/nest-lambda-docker-dev-main"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "nest-lambda-docker",
+                  "dev",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/nest-lambda-docker-dev*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/nest-lambda-docker-dev*:*:*"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "nest-lambda-docker",
+              "dev",
+              {
+                "Ref": "AWS::Region"
+              },
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "MainLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ImageUri": "611875874589.dkr.ecr.ap-northeast-1.amazonaws.com/serverless-nest-lambda-docker-dev@sha256:e18d0f9f4ed71e8593b70aeba2a894e9ab6058b3b9d466b4e6a71839de55c2d5"
+        },
+        "ImageConfig": {
+          "Command": [
+            "dist/lambda.handler"
+          ],
+          "EntryPoint": [
+            "/lambda-entrypoint.sh"
+          ]
+        },
+        "PackageType": "Image",
+        "FunctionName": "nest-lambda-docker-dev-main",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "MainLogGroup"
+      ]
+    },
+    "MainLambdaVersionoqwtpd3lmNRshT7yBelaCQm2RZ4w6lDbaB2J8G6aVVA": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "MainLambdaFunction"
+        },
+        "CodeSha256": "e18d0f9f4ed71e8593b70aeba2a894e9ab6058b3b9d466b4e6a71839de55c2d5"
+      }
+    },
+    "S3BucketChurnnumberuploaddevr": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "churn-number-upload-devr",
+        "NotificationConfiguration": {
+          "LambdaConfigurations": [
+            {
+              "Event": "s3:ObjectCreated:*",
+              "Function": {
+                "Fn::GetAtt": [
+                  "MainLambdaFunction",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "MainLambdaPermissionChurnnumberuploaddevrS3"
+      ]
+    },
+    "MainLambdaPermissionChurnnumberuploaddevrS3": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MainLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "s3.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":s3:::churn-number-upload-devr"
+            ]
+          ]
+        },
+        "SourceAccount": {
+          "Ref": "AWS::AccountId"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      },
+      "Export": {
+        "Name": "sls-nest-lambda-docker-dev-ServerlessDeploymentBucketName"
+      }
+    },
+    "MainLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "MainLambdaVersionoqwtpd3lmNRshT7yBelaCQm2RZ4w6lDbaB2J8G6aVVA"
+      },
+      "Export": {
+        "Name": "sls-nest-lambda-docker-dev-MainLambdaFunctionQualifiedArn"
+      }
+    }
+  }
+}

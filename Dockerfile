@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/nodejs:14
+FROM --platform=linux/amd64 public.ecr.aws/lambda/nodejs:14
 
 COPY . .
 

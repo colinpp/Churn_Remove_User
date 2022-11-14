@@ -1,17 +1,20 @@
-import { configure as serverlessExpress } from '@vendia/serverless-express';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { AppService } from './app.service';
+import { HttpStatus } from '@nestjs/common';
 
-let cachedServer;
+// create a connection
 
 export const handler = async (event, context) => {
-  if (!cachedServer) {
-    const nestApp = await NestFactory.create(AppModule);
-    await nestApp.init();
-    cachedServer = serverlessExpress({
-      app: nestApp.getHttpAdapter().getInstance(),
-    });
-  }
+  //log user in
+  const appContext = await NestFactory.createApplicationContext(AppModule);
+  const appService = appContext.get(AppService);
 
-  return cachedServer(event, context);
+  const obj = event.data;
+  const churnObj = event.data[obj.length - 1];
+
+  return {
+    body: appService.deleteUser(churnObj),
+    statusCode: HttpStatus.OK,
+  };
 };

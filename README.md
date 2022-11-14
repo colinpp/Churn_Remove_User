@@ -1,6 +1,6 @@
-# nest-lambda-docker-container-surpport
+# nest-lambda-docker-container-surpport-churn
 
-This project show you how to deploy the Nestjs Backend app to Lambda the fastest using docker image.
+This project is aws service to delete churned numbers.
 
 ---
 
@@ -13,6 +13,7 @@ If it's not installed, please refer to the link below.
 
 #### Ensure AWS CLI is installed: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 
+Instructions to get started on local machine 
 If the installation is complete, let's get started.
 
 - `npm install serverless -g`
@@ -37,8 +38,4 @@ If the installation is complete, let's get started.
   sls deploy
   ```
 - Wait a minute then you will Success deploy
-  [Click Me!](https://vdgluh9uh8.execute-api.ap-northeast-2.amazonaws.com/dev/hello)
-
-We deployed the Nestjs backend app using Lambda's newly added [Lambda docker container support](https://aws.amazon.com/ko/blogs/korea/new-for-aws-lambda-container-image-support/). This means that Nestjsapp can be operated in a **Serverless environment**, not in a Provisioning environment, a service such as AWS EC2. It also means that it can be distributed up to 10GB of capacity, which can **escape from the capacity limitations** of the existing ZIP method.
-
-If you want more info please [vist my blog](https://velog.io/@ghdmsrkd/NestJS-App-deploy-with-lambda-docker-container-support-and-Serverless-Framwork)
+ 

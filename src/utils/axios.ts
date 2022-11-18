@@ -27,8 +27,8 @@ export const getToken = async () => {
     method: 'post',
     url: '/v2/login',
     data: {
-      userName: process.env.USERNAME,
-      passWord: process.env.PASSWORD,
+      userName: 'AAKCPSSMSPE3HZEV3ODUBCLI5IZG3M',
+      passWord: '#$Sou$9EB7}QC,ix*3z~6W/[0(!PA,',
     },
   })
     .then((res) => {

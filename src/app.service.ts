@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { getToken, getUserJid, deleteUser } from './axios';
+import { getToken, getUserJid, deleteUser } from './utils/axios';
 @Injectable()
 export class AppService {
   async deleteUser(churnObj: any): Promise<string> {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: 'https://devapi.ayoba.me',
 });
 
 export const getUserJid = async (access_token, msisdn) => {
@@ -21,24 +21,30 @@ export const getUserJid = async (access_token, msisdn) => {
   return userId;
 };
 
-export const getToken = async () => {
-  let accessToken = null;
+export const getToken = async (msisdn) => {
   await instance({
     method: 'post',
     url: '/v2/login',
     data: {
-      userName: 'AAKCPSSMSPE3HZEV3ODUBCLI5IZG3M',
-      passWord: '#$Sou$9EB7}QC,ix*3z~6W/[0(!PA,',
+      username: 'AAKCPSSMSPE3HZEV3ODUBCLI5IZG3M',
+      password: '#$Sou$9EB7}QC,ix*3z~6W/[0(!PA,',
     },
   })
     .then((res) => {
-      accessToken = res.data.acccess_token;
+      getUserJid(res.data.access_token, msisdn).then((JID) => {
+        console.log(JID);
+        console.log(JID);
+        deleteUser(res.data.access_token, JID).then((res) => {
+          console.log(res);
+          console.log('deleting user ');
+          return;
+        });
+      });
     })
-    .catch((err) => {
-      console.log('Error getting token for user' + err);
+    .catch((x) => {
+      console.log(x);
+      return 'failed';
     });
-
-  return accessToken;
 };
 
 export const deleteUser = async (access_token, userID) => {

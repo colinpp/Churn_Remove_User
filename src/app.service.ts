@@ -3,14 +3,10 @@ import { getToken, getUserJid, deleteUser } from './utils/axios';
 @Injectable()
 export class AppService {
   async deleteUser(churnObj: any): Promise<string> {
-    let access_token ='';
-    let userJid = '';
-    let outputStr = 'Saved Churn Data';
+    let outputStr = 'Accepted Churn number';
     if (churnObj.port_in === 'false' && churnObj.port_out === 'false') {
-      access_token = await getToken();
-      userJid = await getUserJid(access_token, churnObj.msisdn);
-      outputStr =
-        'Saved churn Data And Deleted user ith msisdn of ' + churnObj.msisdn;
+      outputStr = outputStr + ' Deleting msisdn ' + churnObj.msisdn;
+      console.log('Deleting user ' + churnObj.msisdn);
     }
 
     return outputStr;
